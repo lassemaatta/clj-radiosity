@@ -3,3 +3,5 @@ target/
 .lein-*
 .nrepl-port
 *.iml
+*.log
+resources/public/js

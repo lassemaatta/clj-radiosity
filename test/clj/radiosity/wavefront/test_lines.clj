@@ -1,6 +1,5 @@
 (ns radiosity.wavefront.test_lines
   (:require [clojure.test :refer :all]
-            [clojure.spec.alpha :as s]
             [clojure.spec.test.alpha :as stest]
             [radiosity.wavefront.core :as wavefront]))
 
