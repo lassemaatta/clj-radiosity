@@ -6,9 +6,3 @@
   ::initialize-db
   (fn [_ _]
     db/default-db))
-
-(re-frame/reg-event-db
-  :changed
-  (fn [db [_ val]]
-    ;(draw)
-    (assoc db :name val)))
