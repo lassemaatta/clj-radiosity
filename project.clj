@@ -16,6 +16,7 @@
 
   :plugins [[lein-cljsbuild "1.1.7"]]
 
+  :pedantic :abort
   :monkeypatch-clojure-test false
   :min-lein-version "2.5.3"
 
@@ -34,9 +35,9 @@
   :uberjar-name "radiosity.jar"
 
   :profiles {:dev {:dependencies [[binaryage/devtools "0.9.9"]
-                                  [day8.re-frame/re-frame-10x "0.2.1"]]
+                                  [day8.re-frame/re-frame-10x "0.3.0"]]
 
-                   :plugins      [[javax.servlet/javax.servlet-api "3.1.0"]
+                   :plugins      [[javax.servlet/javax.servlet-api "4.0.0"]
                                   [cheshire "5.8.0"]
                                   [ring/ring-mock "0.3.2"]
                                   [lein-figwheel "0.5.15"]]}}
