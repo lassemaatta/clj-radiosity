@@ -1,12 +1,13 @@
 (ns radiosity-ui.component.camera
   (:require [re-frame.core :as re-frame]
+            [radiosity-ui.effects.interval :as interval]
             [thi.ng.geom.core :as g]
             [thi.ng.geom.vector :refer [vec3]]))
 
 (def ^:private DEFAULT_CAMERA {:eye (vec3 0 0 2)})
 
-(defn- rotate-camera [camera dir]
-  (let [amount  0.1
+(defn- rotate-eye [camera dir]
+  (let [amount  0.05
         eye     (:eye camera)
         new-eye (condp = dir
                   ::up (g/rotate-x eye amount)
@@ -20,15 +21,35 @@
   [db [_ id]]
   (assoc-in db [::camera id] DEFAULT_CAMERA))
 
-(defn- camera-dir
+(defn- rotate-camera
   [db [_ dir id]]
   (let [camera  (get-in db [::camera id] DEFAULT_CAMERA)
-        rotated (rotate-camera camera dir)]
+        rotated (rotate-eye camera dir)]
     (assoc-in db [::camera id] rotated)))
 
+(defn- timer-id [id]
+  (str ::interval "-" id))
+
+;; Events
+
+; Initialize camera
 (re-frame/reg-event-db ::init init)
 
-(re-frame/reg-event-db ::camera-dir camera-dir)
+(re-frame/reg-event-db ::camera-rotate rotate-camera)
+
+(re-frame/reg-event-fx
+  ::camera-rotate-start
+  (fn [_ [_ dir id]]
+    {::interval/interval {:action    :start
+                          :id        (timer-id id)
+                          :frequency 100
+                          :event     [::camera-rotate dir id]}}))
+
+(re-frame/reg-event-fx
+  ::camera-rotate-stop
+  (fn [_ [_ id]]
+    {::interval/interval {:action :stop
+                          :id     (timer-id id)}}))
 
 ;; subs
 
@@ -40,9 +61,10 @@
 ;; view
 
 (defn- direction [id dir]
-  [:input {:type     :button
-           :value    dir
-           :on-click #(re-frame/dispatch [::camera-dir dir id])}])
+  [:input {:type          :button
+           :value         dir
+           :on-mouse-down #(re-frame/dispatch [::camera-rotate-start dir id])
+           :on-mouse-up   #(re-frame/dispatch [::camera-rotate-stop id])}])
 
 (defn camera [id]
   (let [direction (partial direction id)]
